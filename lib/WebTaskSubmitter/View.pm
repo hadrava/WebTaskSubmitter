@@ -342,7 +342,7 @@ sub task_page() {
 		$out .= sprintf "<a href='%s'>$texts->{solution_download}</a>\n", $self->get_url('task', {code => $data->{code}, action => 'solution_download'});
 
 		$codemirror_headers_added = 1;
-		foreach my $js ('codemirror/codemirror.js', 'codemirror/matchbrackets.js', 'codemirror/active-line.js', 'codemirror/shell.js', 'epiceditor.min.js') {
+		foreach my $js ('codemirror/codemirror.js', 'codemirror/matchbrackets.js', 'codemirror/active-line.js', 'codemirror/shell.js', 'epiceditor.min.js', 'commonmark.min.js') {
 			$self->{headers} .= "<script src='$options->{js_path}/$js'></script>\n";
 		}
 		foreach my $css ('codemirror/codemirror.css', 'codemirror/midnight.css') {
@@ -378,7 +378,7 @@ sub task_page() {
 	$out .= "</form>\n";
 
 	unless ($codemirror_headers_added) {
-		foreach my $js ('codemirror/codemirror.js', 'codemirror/matchbrackets.js', 'codemirror/active-line.js', 'codemirror/shell.js', 'epiceditor.min.js') {
+		foreach my $js ('codemirror/codemirror.js', 'codemirror/matchbrackets.js', 'codemirror/active-line.js', 'codemirror/shell.js', 'epiceditor.min.js', 'commonmark.min.js') {
 			$self->{headers} .= "<script src='$options->{js_path}/$js'></script>\n";
 		}
 		foreach my $css ('codemirror/codemirror.css', 'codemirror/midnight.css') {
@@ -442,7 +442,7 @@ sub solution_page() {
 	$out .= sprintf "<div class='solution_code'><textarea disabled class='form-control' id='solution_code'>%s</textarea></div>\n\n", html_escape($solution->{code});
 	$out .= sprintf "<a href='%s'>$texts->{solution_download}</a>\n", $self->get_url('solution', {sid => $data->{sid}, action => 'download'});
 
-	foreach my $js ('codemirror/codemirror.js', 'codemirror/matchbrackets.js', 'codemirror/active-line.js', 'codemirror/shell.js', 'epiceditor.min.js') {
+	foreach my $js ('codemirror/codemirror.js', 'codemirror/matchbrackets.js', 'codemirror/active-line.js', 'codemirror/shell.js', 'epiceditor.min.js', 'commonmark.min.js') {
 		$self->{headers} .= "<script src='$options->{js_path}/$js'></script>\n";
 	}
 	foreach my $css ('codemirror/codemirror.css', 'codemirror/midnight.css') {
@@ -518,7 +518,15 @@ sub get_epiceditor() {
 	my $self = shift;
 	my $options = $self->{Main}->{options};
 	return "<script type='text/javascript'>
+	function commonmarkparserpasre(md) {
+		var commonmark = window.commonmark;
+		var writer = new commonmark.HtmlRenderer({ sourcepos: true, safe: true });
+		var reader = new commonmark.Parser();
+		var parsed = reader.parse(md);
+		return writer.render(parsed);
+	}
 	var editor = new EpicEditor({
+		parser: commonmarkparserpasre,
 		container: 'epiceditor',
 		textarea: 'solution_comment',
 		clientSideStorage: false,

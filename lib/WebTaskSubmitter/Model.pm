@@ -2,7 +2,7 @@ package WebTaskSubmitter::Model;
 
 use common::sense;
 use Digest::SHA qw/sha1_hex/;
-use Text::Markdown 'markdown';
+use CMark 'markdown';
 
 sub new {
 	my $class = shift;
